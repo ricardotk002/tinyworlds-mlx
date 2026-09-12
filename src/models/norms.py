@@ -44,14 +44,14 @@ class AdaptiveNormalizer(nn.Module):
 
     def __call__(self, x, conditioning=None):
         # x: [B, T, P, E]
-        # conditioning: [B, T, C] or [B, T-1, C] (if T is shorter -> prepend a zero step)
+        # conditioning: [B, T, C] or [B, T-1, C]
         if conditioning is None:
             return self.rms(x)
         else:
             x = self.ln(x)
 
             if x.shape[-3] - 1 == conditioning.shape[-2]:
-                conditioning = mx.pad(conditioning, ((0, 0), (0, 1), (0, 0)))
+                conditioning = mx.pad(conditioning, ((0, 0), (1, 0), (0, 0)))
 
             gamma, beta = mx.split(self.to_gamma_beta(conditioning), 2, axis=-1)
             gamma = mx.expand_dims(gamma, axis=-2)
