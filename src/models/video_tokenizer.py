@@ -41,9 +41,7 @@ class PixelShuffleFrameHead(nn.Module):
     def __call__(self, tokens):
         # tokens: [B, T, P, E] -> [B, T, C, H, W]
         x = self.to_pixels(tokens)
-        P = x.shape[-2]
-        hp = wp = int(P ** 0.5)
-        return rearrange(x, "b t (hp wp) (c p1 p2) -> b t c (hp p1) (wp p2)", c=self.channels, wp=wp, hp=hp, p1=self.patch_size, p2=self.patch_size)
+        return rearrange(x, "b t (hp wp) (c p1 p2) -> b t c (hp p1) (wp p2)", c=self.channels, wp=self.Wp, hp=self.Hp, p1=self.patch_size, p2=self.patch_size)
 
 
 class VideoTokenizerDecoder(nn.Module):

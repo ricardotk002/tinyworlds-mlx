@@ -78,8 +78,7 @@ class LatentActionsDecoder(nn.Module):
         x = self.transformer(x, actions)
         x = self.frame_head(x)
 
-        hp = wp = int(P ** 0.5)
-        return rearrange(x, "b t (hp wp) (c p1 p2) -> b t c (hp p1) (wp p2)", hp=hp, wp= wp, p1=self.patch_size, p2=self.patch_size)
+        return rearrange(x, "b t (hp wp) (c p1 p2) -> b t c (hp p1) (wp p2)", hp=self.Hp, wp=self.Wp, p1=self.patch_size, p2=self.patch_size)
 
 class LatentActionModel(nn.Module):
     def __init__(self, frame_size=(128, 128), n_actions: int = 8, patch_size: int = 8,
