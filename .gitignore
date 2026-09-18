@@ -2,3 +2,5 @@
 *pycache*/
 data/
 wandb/*
+
+.DS_Store
