@@ -49,8 +49,11 @@ class Muon(optim.Optimizer):
         g = (gradient + self.momentum * buf) if self.nesterov else buf
 
         if parameter.ndim >= 2:
+            og_shape = g.shape
+            g = g.reshape(-1, og_shape[-1])
             g = zeropower_via_newtonschulz5(g)
             g = g * max(1, g.shape[-2] / g.shape[-1]) ** 0.5
+            g = g.reshape(og_shape)
         else:
             g = buf
 
