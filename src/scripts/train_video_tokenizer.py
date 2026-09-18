@@ -9,24 +9,24 @@ from models.video_tokenizer import VideoTokenizer
 from utils.data import H5VideoDataset
 from utils.scheduler import cosine_with_warmup
 from utils.training import train_step
-
+from models.muon import Muon
 
 def parse_args():
     p = argparse.ArgumentParser()
-    p.add_argument("--data", default="data/topgear.h5")
+    p.add_argument("--data", default="data/topgear_actions_140.h5")
     p.add_argument("--out", default="checkpoints/video_tokenizer.safetensors")
     p.add_argument("--stride", type=int, default=4, help="frame subsampling stride (source h5 is ~60fps)")
     p.add_argument("--context-length", type=int, default=4)
     p.add_argument("--batch-size", type=int, default=32)
     p.add_argument("--n-updates", type=int, default=40000)
     p.add_argument("--warmup-steps", type=int, default=None)
-    p.add_argument("--learning-rate", type=float, default=1e-3)
+    p.add_argument("--learning-rate", type=float, default=3e-3)
     p.add_argument("--log-interval", type=int, default=200)
     p.add_argument("--checkpoint-interval", type=int, default=2000)
 
-    p.add_argument("--frame-height", type=int, default=64)
-    p.add_argument("--frame-width", type=int, default=64)
-    p.add_argument("--patch-size", type=int, default=4)
+    p.add_argument("--frame-height", type=int, default=140)
+    p.add_argument("--frame-width", type=int, default=160)
+    p.add_argument("--patch-size", type=int, default=10)
     p.add_argument("--embed-dim", type=int, default=32)
     p.add_argument("--num-heads", type=int, default=8)
     p.add_argument("--hidden-dim", type=int, default=128)
@@ -56,7 +56,8 @@ def main():
         latent_dim=args.latent_dim,
         num_bins=args.num_bins,
     )
-    optimizer = optim.AdamW(learning_rate=args.learning_rate)
+    # optimizer = optim.AdamW(learning_rate=args.learning_rate)
+    optimizer = Muon(learning_rate=args.learning_rate, momentum=0.95, weight_decay=0.1)
 
     def loss_fn(m, batch):
         loss, _ = m(batch)
